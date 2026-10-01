@@ -216,34 +216,6 @@ const TYPE_STYLE = {
 };
 
 const EXAMPLES = {
-  project: {
-    key: 'project', label: 'Project: Mobile Rollout',
-    crumb: [['Northwind Logistics', 'workspace'], ['Mobile Rollout', null]],
-    title: 'Mobile Rollout', state: 'backlog', subtitle: 'Workspace: Northwind Logistics',
-    tabs: ['Overview', 'Issues', 'Documents', 'Conversations', 'Activity', 'Connectors', 'Settings'],
-    sidebar: { ws: ['N', '#e11d48', 'Northwind Logistics', 'Workspace · 10 projects'], projects: ['Compliance Uplift', 'Mobile Rollout', 'Reporting Rebuild', 'Security Hardening', 'Performance Programme', 'Legacy Decommission', 'Self-Service Portal', 'Payments Integration'], activeProject: 'Mobile Rollout' },
-    folders: [
-      { id: 'intake', name: '1 Intake', parent: null, updated: 'Today · 3:32 PM', created: '9/30/2026' },
-      { id: 'design', name: '2 Design', parent: null, updated: 'Today · 3:32 PM', created: '9/30/2026' },
-      { id: 'delivery', name: '3 Delivery', parent: null, updated: 'Today · 3:32 PM', created: '9/30/2026' },
-      { id: 'handover', name: '4 Handover', parent: null, updated: 'Today · 3:32 PM', created: '9/30/2026' },
-      { id: 'client', name: 'Client material', parent: null, updated: 'Today · 3:32 PM', created: '9/30/2026' },
-    ],
-    docs: [
-      { id: 'd1', title: 'Project Scope — Mobile Rollout', type: 'project-scope', folder: 'intake', updated: 'Today · 3:32 PM', created: '8/21/2026', size: '306 B', indexing: true },
-      { id: 'd2', title: 'Business Requirements — Mobile Rollout', type: 'brd', folder: 'intake', updated: 'Today · 3:32 PM', created: '8/21/2026', size: '302 B', indexing: true },
-      { id: 'd3', title: 'WBS & Estimate — Mobile Rollout', type: 'estimate', folder: 'intake', updated: 'Today · 3:32 PM', created: '8/21/2026', size: '221 B', indexing: true },
-      { id: 'd4', title: 'Statement of Work — Mobile Rollout', type: 'sow', folder: 'intake', updated: 'Today · 3:32 PM', created: '8/21/2026', size: '224 B', indexing: true },
-      { id: 'd5', title: 'Architecture Decision — Mobile Rollout', type: 'decision', folder: 'design', updated: 'Today · 3:32 PM', created: '8/21/2026', size: '251 B', indexing: true },
-      { id: 'd6', title: 'Interface Mockup — Mobile Rollout', type: 'mock', folder: 'design', updated: 'Today · 3:32 PM', created: '8/21/2026', size: '186 B', indexing: true },
-      { id: 'd7', title: 'Status report — week 12', type: 'status-report', folder: 'delivery', updated: 'Today · 3:32 PM', created: '9/30/2026', size: '139 B', indexing: true },
-      { id: 'd8', title: 'Release notes — Mobile Rollout 1.0', type: 'release-notes', folder: 'delivery', updated: 'Today · 3:32 PM', created: '9/30/2026', size: '136 B', indexing: true },
-      { id: 'd9', title: 'Operations manual — Mobile Rollout', type: 'spec', folder: 'handover', updated: 'Today · 3:32 PM', created: '9/30/2026', size: '142 B', indexing: true },
-      { id: 'd10', title: 'Acceptance record — phase 1', type: 'decision', folder: 'handover', updated: 'Today · 3:32 PM', created: '9/30/2026', size: '123 B', indexing: true },
-      { id: 'd11', title: 'Store list (spreadsheet placeholder)', type: 'spec', folder: 'client', updated: 'Today · 3:32 PM', created: '9/30/2026', size: '224 B', indexing: true },
-      { id: 'd12', title: 'Brand guidelines (PDF placeholder)', type: 'spec', folder: 'client', updated: 'Today · 3:32 PM', created: '9/30/2026', size: '230 B', indexing: true },
-    ],
-  },
   library: {
     key: 'library', label: 'Workspace: Razor Vision (internal) — the organisation library',
     crumb: [['Razor Vision (internal)', 'workspace']],
@@ -275,10 +247,38 @@ const EXAMPLES = {
       { id: 'l16', title: '6 Statement of work — template', type: 'sow', folder: 'chain', updated: 'Today · 11:52 AM', created: '10/1/2026', size: '88 B' },
     ],
   },
+  project: {
+    key: 'project', label: 'Project: Mobile Rollout',
+    crumb: [['Northwind Logistics', 'workspace'], ['Mobile Rollout', null]],
+    title: 'Mobile Rollout', state: 'backlog', subtitle: 'Workspace: Northwind Logistics',
+    tabs: ['Overview', 'Issues', 'Documents', 'Conversations', 'Activity', 'Connectors', 'Settings'],
+    sidebar: { ws: ['N', '#e11d48', 'Northwind Logistics', 'Workspace · 10 projects'], projects: ['Compliance Uplift', 'Mobile Rollout', 'Reporting Rebuild', 'Security Hardening', 'Performance Programme', 'Legacy Decommission', 'Self-Service Portal', 'Payments Integration'], activeProject: 'Mobile Rollout' },
+    folders: [
+      { id: 'intake', name: '1 Intake', parent: null, updated: 'Today · 3:32 PM', created: '9/30/2026' },
+      { id: 'design', name: '2 Design', parent: null, updated: 'Today · 3:32 PM', created: '9/30/2026' },
+      { id: 'delivery', name: '3 Delivery', parent: null, updated: 'Today · 3:32 PM', created: '9/30/2026' },
+      { id: 'handover', name: '4 Handover', parent: null, updated: 'Today · 3:32 PM', created: '9/30/2026' },
+      { id: 'client', name: 'Client material', parent: null, updated: 'Today · 3:32 PM', created: '9/30/2026' },
+    ],
+    docs: [
+      { id: 'd1', title: 'Project Scope — Mobile Rollout', type: 'project-scope', folder: 'intake', updated: 'Today · 3:32 PM', created: '8/21/2026', size: '306 B', indexing: true },
+      { id: 'd2', title: 'Business Requirements — Mobile Rollout', type: 'brd', folder: 'intake', updated: 'Today · 3:32 PM', created: '8/21/2026', size: '302 B', indexing: true },
+      { id: 'd3', title: 'WBS & Estimate — Mobile Rollout', type: 'estimate', folder: 'intake', updated: 'Today · 3:32 PM', created: '8/21/2026', size: '221 B', indexing: true },
+      { id: 'd4', title: 'Statement of Work — Mobile Rollout', type: 'sow', folder: 'intake', updated: 'Today · 3:32 PM', created: '8/21/2026', size: '224 B', indexing: true },
+      { id: 'd5', title: 'Architecture Decision — Mobile Rollout', type: 'decision', folder: 'design', updated: 'Today · 3:32 PM', created: '8/21/2026', size: '251 B', indexing: true },
+      { id: 'd6', title: 'Interface Mockup — Mobile Rollout', type: 'mock', folder: 'design', updated: 'Today · 3:32 PM', created: '8/21/2026', size: '186 B', indexing: true },
+      { id: 'd7', title: 'Status report — week 12', type: 'status-report', folder: 'delivery', updated: 'Today · 3:32 PM', created: '9/30/2026', size: '139 B', indexing: true },
+      { id: 'd8', title: 'Release notes — Mobile Rollout 1.0', type: 'release-notes', folder: 'delivery', updated: 'Today · 3:32 PM', created: '9/30/2026', size: '136 B', indexing: true },
+      { id: 'd9', title: 'Operations manual — Mobile Rollout', type: 'spec', folder: 'handover', updated: 'Today · 3:32 PM', created: '9/30/2026', size: '142 B', indexing: true },
+      { id: 'd10', title: 'Acceptance record — phase 1', type: 'decision', folder: 'handover', updated: 'Today · 3:32 PM', created: '9/30/2026', size: '123 B', indexing: true },
+      { id: 'd11', title: 'Store list (spreadsheet placeholder)', type: 'spec', folder: 'client', updated: 'Today · 3:32 PM', created: '9/30/2026', size: '224 B', indexing: true },
+      { id: 'd12', title: 'Brand guidelines (PDF placeholder)', type: 'spec', folder: 'client', updated: 'Today · 3:32 PM', created: '9/30/2026', size: '230 B', indexing: true },
+    ],
+  },
 };
 
 /* ---------------- state ---------------- */
-const state = { example: 'project', view: 'tree', collapsed: new Set(), selected: null, currentFolder: null };
+const state = { example: 'library', view: 'tree', collapsed: new Set(), selected: null, currentFolder: null };
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 const collator = new Intl.Collator(undefined, { numeric: true, sensitivity: 'base' });
 const ic = (d, cls = 'ic') => `<svg class="${cls}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="${d}"/></svg>`;
