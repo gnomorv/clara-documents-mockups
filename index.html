@@ -334,7 +334,7 @@ function docRow(d, tree) {
   const rails = tree ? railsHtml(tree) : '';
   return `<div class="grid row" role="button" tabindex="0" data-doc="${d.id}" title="${esc(d.title)}">
     <div class="cell-ic">${tree ? '' : typeIcon(d.type)}</div>
-    <div class="name" style="padding-left:${depth ? depth * 20 + 2 : 0}px">${rails}${tree ? typeIcon(d.type) : ''}<span class="t">${esc(d.title)}</span></div>
+    <div class="name" style="padding-left:${depth ? depth * 20 + 2 : 0}px">${rails}<span class="t">${esc(d.title)}</span></div>
     <div>${typePill(d.type)}</div>
     <div class="muted wide">${d.updated}</div>
     <div class="muted wide">${d.created}</div>
