@@ -217,7 +217,7 @@ const TYPE_STYLE = {
 
 const EXAMPLES = {
   library: {
-    key: 'library', label: 'Workspace: Razor Vision (internal) — the organisation library',
+    key: 'library', label: 'Organisation: Razor Vision library',
     crumb: [['Razor Vision (internal)', 'workspace']],
     title: 'Razor Vision (internal)', state: null, subtitle: 'The organisation library: templates and standards, product decisions and internal reference, shared across every client.',
     tabs: ['Overview', 'Agreements', 'Documents', 'Conversations', 'Activity', 'AI Activity', 'Connectors', 'Assets', 'Settings'],
@@ -245,6 +245,22 @@ const EXAMPLES = {
       { id: 'l14', title: '4 WBS & estimate — template', type: 'estimate', folder: 'chain', updated: 'Today · 11:52 AM', created: '10/1/2026', size: '83 B' },
       { id: 'l15', title: '5 Commercial terms — template', type: 'commercial-terms', folder: 'chain', updated: 'Today · 11:52 AM', created: '10/1/2026', size: '70 B' },
       { id: 'l16', title: '6 Statement of work — template', type: 'sow', folder: 'chain', updated: 'Today · 11:52 AM', created: '10/1/2026', size: '88 B' },
+    ],
+  },
+  workspace: {
+    key: 'workspace', label: 'Workspace: Northwind Logistics',
+    crumb: [['Northwind Logistics', 'workspace']],
+    title: 'Northwind Logistics', state: null, subtitle: 'Freight brokerage modernising a 1990s dispatch system.',
+    tabs: ['Overview', 'Agreements', 'Documents', 'Conversations', 'Activity', 'AI Activity', 'Connectors', 'Assets', 'Settings'],
+    sidebar: { ws: ['N', '#e11d48', 'Northwind Logistics', 'Workspace · 10 projects'], projects: ['Compliance Uplift', 'Mobile Rollout', 'Reporting Rebuild', 'Security Hardening', 'Performance Programme', 'Legacy Decommission', 'Self-Service Portal', 'Payments Integration'], activeProject: null },
+    folders: [
+      { id: 'acct', name: 'Account context', parent: null, updated: 'Today · 3:32 PM', created: '9/30/2026' },
+      { id: 'cmat', name: 'Client-supplied material', parent: null, updated: 'Today · 3:32 PM', created: '9/30/2026' },
+    ],
+    docs: [
+      { id: 'w1', title: 'Account profile — Northwind Logistics', type: 'spec', folder: 'acct', updated: 'Today · 3:32 PM', created: '9/30/2026', size: '198 B' },
+      { id: 'w2', title: 'Quarterly account review — Q3 2026', type: 'status-report', folder: 'acct', updated: 'Today · 3:32 PM', created: '9/30/2026', size: '151 B' },
+      { id: 'w3', title: 'Master vendor list (spreadsheet placeholder)', type: 'spec', folder: 'cmat', updated: 'Today · 3:32 PM', created: '9/30/2026', size: '226 B' },
     ],
   },
   project: {
@@ -386,7 +402,7 @@ function render() {
   const ex = EXAMPLES[state.example];
   renderSidebar(ex);
   document.getElementById('page').innerHTML = `
-    <div class="note"><b>Interactive mockup</b> with fictional data. Switch example: ${Object.values(EXAMPLES).map(e => `<button class="chip ${e.key === state.example ? 'on' : ''}" data-example="${e.key}">${esc(e.label)}</button>`).join('')} <span>· The rightmost view toggle is the tree. Click a chevron to fold a shelf.</span></div>
+    <div class="note"><b>Interactive mockup</b> with fictional data. Switch example: ${Object.values(EXAMPLES).map(e => `<button class="chip ${e.key === state.example ? 'on' : ''}" data-example="${e.key}">${esc(e.label)}</button>`).join('')} <span>· Organisation → workspace → project: the same tree at every level. The rightmost view toggle is the tree; click a chevron to fold a shelf.</span></div>
     <div class="ptitle"><h1>${esc(ex.title)}</h1>${ex.state ? `<span class="badge">${ex.state}</span>` : ''}
       <div class="actions"><button class="btn primary" data-toast="Starts a conversation scoped to this ${ex.key === 'project' ? 'project' : 'workspace'}">${ic(P.chat, 'ic').replace('class="ic"', 'class="ic" style="width:16px;height:16px"')}Start Conversation</button>${ex.key === 'project' ? '<button class="btn" data-toast="Opens the credit request form">+ New credit request</button><button class="btn" data-toast="Changes the project state">Backlog ⌄</button><button class="btn" data-toast="Sets a priority">No Priority ⌄</button>' : ''}<button class="btn" data-toast="Archives it">Archive</button></div></div>
     <div class="subtitle">${esc(ex.subtitle)}</div>
