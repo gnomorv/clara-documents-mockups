@@ -1,0 +1,426 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Clara Studio — Documents tree view (mockup)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+  :root {
+    --blue: #43B6E7; --blue-dark: #2A9FD0; --blue-light: #6BC9F0;
+    --page: #ffffff; --sidebar: #f9fafb; --header: rgba(255,255,255,.95);
+    --border: #e5e5e5; --border-soft: rgba(229,229,229,.6); --rail: #d4d4d4;
+    --card: #ffffff; --hover: #f5f5f5; --row-hover: rgba(245,245,245,.6);
+    --t900: #1c1c24; --t800: #27272f; --t700: #404040; --t600: #525252; --t500: #737373; --t400: #a3a3a3;
+    --kbd-border: #d4d4d4; --note-bg: rgba(67,182,231,.08); --note-border: rgba(67,182,231,.35);
+    --folder-type: #d97706; --indexing: #b45309;
+  }
+  :root[data-theme="dark"] {
+    --page: #0d0d12; --sidebar: #16161e; --header: rgba(22,22,30,.95);
+    --border: #27272f; --border-soft: rgba(39,39,47,.6); --rail: #525252;
+    --card: #16161e; --hover: #27272f; --row-hover: rgba(255,255,255,.03);
+    --t900: #ffffff; --t800: #e5e5e5; --t700: #d4d4d4; --t600: #a3a3a3; --t500: #a3a3a3; --t400: #737373;
+    --kbd-border: #525252; --note-bg: rgba(67,182,231,.1); --note-border: rgba(67,182,231,.3);
+    --folder-type: #fbbf24; --indexing: #fbbf24;
+  }
+  * { box-sizing: border-box; }
+  html, body { height: 100%; }
+  body { margin: 0; background: var(--page); color: var(--t900); font-family: 'Plus Jakarta Sans', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; font-size: 14px; line-height: 1.5; -webkit-font-smoothing: antialiased; }
+  button { font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; }
+  button:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
+  a { color: inherit; text-decoration: none; }
+  kbd { font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 2px 6px; border-radius: 4px; border: 1px solid var(--kbd-border); color: var(--t500); }
+  svg.ic { width: 20px; height: 20px; flex-shrink: 0; }
+
+  .shell { display: flex; min-height: 100%; }
+  .sidebar { position: fixed; inset-block: 0; left: 0; width: 280px; display: flex; flex-direction: column; background: var(--sidebar); border-right: 1px solid var(--border); z-index: 30; transition: transform .3s; }
+  .content { flex: 1; min-width: 0; margin-left: 280px; }
+  .logo { display: flex; align-items: center; gap: 12px; padding: 0 16px; height: 56px; border-bottom: 1px solid var(--border); }
+  .logo-slash { width: 8px; height: 24px; border-radius: 2px; background: linear-gradient(180deg, var(--blue), var(--blue-dark)); transform: skewX(-12deg); }
+  .logo-text { font-weight: 600; }
+  .sb-scroll { flex: 1; overflow-y: auto; padding: 12px 12px 8px; }
+  .ws { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border: 1px solid var(--border); border-radius: 10px; background: var(--card); margin-bottom: 10px; }
+  .ws .av { width: 32px; height: 32px; border-radius: 8px; background: #e11d48; color: #fff; font-weight: 700; display: grid; place-items: center; }
+  .ws .nm { font-weight: 600; font-size: 13px; }
+  .ws .sub { font-size: 11px; color: var(--t500); }
+  .jump { display: flex; align-items: center; gap: 8px; padding: 8px 12px; border: 1px solid var(--border); border-radius: 10px; color: var(--t500); margin-bottom: 14px; font-size: 13px; }
+  .jump span { flex: 1; }
+  .sb-item { display: flex; align-items: center; gap: 12px; width: 100%; padding: 8px 12px; border-radius: 8px; color: var(--t600); font-size: 14px; }
+  .sb-item:hover { background: var(--hover); color: var(--t900); }
+  .sb-item.active { background: rgba(67,182,231,.1); color: var(--blue); }
+  .sb-item svg.ic { width: 18px; height: 18px; }
+  .sb-head { display: flex; align-items: center; justify-content: space-between; padding: 14px 12px 6px; font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--t500); }
+  .proj { display: flex; align-items: center; gap: 12px; padding: 8px 12px; border-radius: 8px; color: var(--t700); font-size: 14px; }
+  .proj .fold { width: 18px; height: 18px; color: #22c55e; }
+  .proj.active { background: rgba(67,182,231,.1); color: var(--blue); }
+  .proj.off .fold { color: var(--t500); }
+  .showall { display: block; padding: 10px 12px; color: var(--blue); font-size: 14px; }
+  .sb-footer { border-top: 1px solid var(--border); padding: 8px; }
+  .sb-footer button { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; padding: 8px; border-radius: 8px; color: var(--t600); font-size: 13px; }
+  .sb-footer button:hover { background: var(--hover); }
+
+  .header { position: sticky; top: 0; z-index: 20; height: 56px; background: var(--header); backdrop-filter: blur(8px); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; padding: 0 24px; gap: 12px; }
+  .crumb { display: flex; align-items: center; gap: 8px; font-size: 14px; color: var(--t500); min-width: 0; }
+  .crumb .ws-l { color: var(--t900); }
+  .crumb .tag { font-size: 10px; color: var(--t400); }
+  .crumb .cur { color: var(--t900); }
+  .hright { display: flex; align-items: center; gap: 4px; }
+  .search-trigger { display: flex; align-items: center; gap: 8px; height: 36px; padding: 0 8px 0 12px; border-radius: 8px; min-width: 260px; border: 1px solid var(--border); background: var(--sidebar); color: var(--t500); margin-right: 8px; }
+  .search-trigger span { flex: 1; text-align: left; }
+  .icbtn { padding: 8px; border-radius: 8px; color: var(--t600); display: inline-flex; }
+  .icbtn:hover { background: var(--hover); }
+  .user { display: flex; align-items: center; gap: 16px; margin-left: 12px; }
+  .user .txt { text-align: right; line-height: 1.25; }
+  .user .nm { font-size: 14px; font-weight: 500; color: var(--t800); }
+  .user .em { font-size: 12px; color: var(--t500); }
+  .avatar { width: 40px; height: 40px; border-radius: 50%; overflow: hidden; display: flex; box-shadow: 0 0 0 2px rgba(67,182,231,.2); }
+  .avatar svg { width: 100%; height: 100%; }
+  .signout { font-size: 14px; color: var(--t600); }
+
+  main { padding: 24px; }
+  .page { max-width: 1280px; margin: 0 auto; }
+  .note { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; padding: 10px 14px; margin-bottom: 20px; border: 1px dashed var(--note-border); background: var(--note-bg); border-radius: 10px; font-size: 12px; color: var(--t600); }
+  .note b { color: var(--t900); }
+  .chip { font-size: 12px; padding: 3px 10px; border-radius: 999px; border: 1px solid var(--note-border); color: var(--blue-dark); background: var(--page); }
+  .chip.on { background: var(--blue); color: #fff; border-color: var(--blue); }
+  .ptitle { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+  .ptitle h1 { font-size: 26px; font-weight: 700; margin: 0; }
+  .badge { font-size: 11px; font-weight: 600; padding: 4px 10px; border-radius: 8px; background: rgba(34,197,94,.15); color: #15803d; }
+  :root[data-theme="dark"] .badge { color: #4ade80; }
+  .actions { display: flex; align-items: center; gap: 10px; margin-left: auto; flex-wrap: wrap; }
+  .btn { display: inline-flex; align-items: center; gap: 8px; padding: 8px 14px; border-radius: 8px; border: 1px solid var(--border); background: var(--card); font-size: 14px; font-weight: 500; }
+  .btn.primary { background: var(--blue); color: #fff; border-color: var(--blue); }
+  .btn.sm { padding: 6px 12px; font-size: 13px; }
+  .subtitle { color: var(--t500); margin: 6px 0 20px; font-size: 15px; }
+  .tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--border); margin-bottom: 20px; overflow-x: auto; }
+  .tab { display: flex; align-items: center; gap: 8px; padding: 10px 16px; font-size: 14px; color: var(--t500); border-bottom: 2px solid transparent; margin-bottom: -1px; white-space: nowrap; }
+  .tab.active { color: var(--t900); border-color: var(--t700); font-weight: 500; }
+  .tab svg.ic { width: 16px; height: 16px; }
+
+  .sec-head { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 10px; }
+  .sec-head h2 { display: flex; align-items: center; gap: 8px; font-size: 20px; font-weight: 600; margin: 0; }
+  .sec-head h2 .n { color: var(--t400); font-weight: 400; }
+  .sec-head .actions { gap: 8px; }
+  .toolbar { display: flex; align-items: center; gap: 8px; margin: 6px 0 14px; }
+  .trail { flex: 1; display: flex; align-items: center; border-bottom: 1px solid var(--border); min-width: 0; gap: 2px; }
+  .trail button, .trail span { padding: 8px 12px; font-size: 14px; font-weight: 600; color: var(--t500); border-bottom: 2px solid transparent; margin-bottom: -1px; white-space: nowrap; }
+  .trail .on { color: var(--blue); border-color: var(--blue); }
+  .navbtn { display: inline-flex; padding: 6px; border-radius: 6px; color: var(--t400); }
+  .views { display: flex; gap: 6px; margin-left: 8px; }
+  .vbtn { display: inline-flex; padding: 6px; border-radius: 8px; border: 1px solid var(--border); color: var(--t500); }
+  .vbtn svg { width: 16px; height: 16px; }
+  .vbtn[aria-pressed="true"] { color: var(--blue); border-color: var(--blue); background: rgba(67,182,231,.06); }
+
+  .explorer { border: 1px solid var(--border); border-radius: 10px; overflow: hidden; background: var(--card); }
+  .grid { display: grid; grid-template-columns: 40px 1fr 100px 160px 100px 110px; gap: 12px; align-items: center; padding: 10px 16px; }
+  .ghead { border-bottom: 1px solid var(--border); font-size: 11px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--t500); padding-block: 8px; }
+  .row { border-bottom: 1px solid var(--border-soft); cursor: pointer; position: relative; user-select: none; }
+  .row:hover { background: var(--row-hover); box-shadow: inset 3px 0 0 var(--blue); }
+  .row.sel { background: rgba(67,182,231,.06); box-shadow: inset 3px 0 0 var(--blue); }
+  .cell-ic { display: flex; align-items: center; justify-content: center; }
+  .chev { display: inline-flex; padding: 4px; border-radius: 4px; color: var(--t500); }
+  .chev:hover { background: var(--hover); color: var(--t900); }
+  .chev svg { width: 16px; height: 16px; transition: transform .15s; }
+  .row[aria-expanded="false"] .chev svg { transform: rotate(-90deg); }
+  .name { position: relative; display: flex; align-items: center; gap: 8px; min-width: 0; font-size: 14px; font-weight: 500; }
+  .name .t { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .rail { position: absolute; top: -10px; bottom: -10px; border-left: 1px dashed var(--rail); }
+  .rail.last { bottom: 50%; }
+  .conn { position: absolute; top: 50%; width: 10px; border-top: 1px dashed var(--rail); }
+  .tic { width: 32px; height: 32px; border-radius: 8px; display: grid; place-items: center; font-family: 'JetBrains Mono', monospace; font-size: 9px; font-weight: 600; flex-shrink: 0; }
+  .pill { display: inline-flex; padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 600; white-space: nowrap; }
+  .muted { font-size: 12px; color: var(--t500); white-space: nowrap; }
+  .right { text-align: right; display: flex; justify-content: flex-end; align-items: center; gap: 6px; }
+  .idx { font-size: 10px; color: var(--indexing); }
+  .ftype { font-size: 12px; font-weight: 600; color: var(--folder-type); }
+  .status { display: flex; gap: 16px; padding-top: 10px; margin-top: 8px; border-top: 1px solid var(--border); font-size: 12px; color: var(--t500); }
+  .cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; padding: 16px; }
+  .card { border: 1px solid var(--border); border-radius: 10px; padding: 14px; display: flex; flex-direction: column; gap: 8px; }
+  .card .t { font-weight: 600; font-size: 14px; }
+  .fab { position: fixed; right: 28px; bottom: 28px; width: 56px; height: 56px; border-radius: 50%; background: var(--blue); color: #fff; display: grid; place-items: center; box-shadow: 0 10px 25px rgba(67,182,231,.4); }
+  .toast { position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%); background: var(--t900); color: var(--page); padding: 10px 14px; border-radius: 10px; font-size: 13px; z-index: 60; box-shadow: 0 10px 30px rgba(0,0,0,.25); display: flex; gap: 10px; }
+  .toast code { font-family: 'JetBrains Mono', monospace; font-size: 11px; opacity: .8; }
+  .hamb { display: none; padding: 8px; color: var(--t600); border-radius: 8px; }
+  .drawer-backdrop { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.4); z-index: 25; }
+
+  @media (max-width: 1100px) {
+    .grid { grid-template-columns: 40px 1fr 100px; }
+    .wide { display: none !important; }
+    .search-trigger span, .search-trigger kbd { display: none; }
+    .search-trigger { min-width: 0; padding: 0 8px; }
+  }
+  @media (max-width: 1024px) {
+    .sidebar { transform: translateX(-100%); }
+    .shell.drawer .sidebar { transform: none; }
+    .shell.drawer .drawer-backdrop { display: block; }
+    .content { margin-left: 0; }
+    .hamb { display: inline-flex; }
+    .sb-footer { display: none; }
+  }
+  @media (max-width: 640px) {
+    main { padding: 16px; }
+    .header { padding: 0 16px; }
+    .user .txt, .signout, .crumb { display: none; }
+    .ptitle h1 { font-size: 22px; }
+  }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+<div class="shell" id="shell">
+  <div class="drawer-backdrop" id="drawerBackdrop"></div>
+  <aside class="sidebar" aria-label="Sidebar">
+    <div class="logo"><div class="logo-slash"></div><span class="logo-text">Clara Studio</span></div>
+    <div class="sb-scroll" id="sidebar"></div>
+    <div class="sb-footer"><button type="button"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 19l-7-7 7-7m8 14l-7-7 7-7"/></svg>Collapse</button></div>
+  </aside>
+  <div class="content">
+    <header class="header">
+      <div style="display:flex;align-items:center;gap:8px;min-width:0">
+        <button class="hamb" id="hamb" aria-label="Open navigation"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button>
+        <nav class="crumb" aria-label="Breadcrumb" id="crumb"></nav>
+      </div>
+      <div class="hright">
+        <button class="search-trigger" type="button" aria-label="Search"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg><span>Search</span><kbd>⌘K</kbd></button>
+        <button class="icbtn" id="themeBtn" aria-label="Switch theme" title="Switch theme"></button>
+        <button class="icbtn" aria-label="Notifications"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg></button>
+        <button class="icbtn" aria-label="What's new"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15.59 14.37a6 6 0 01-5.84 7.38v-4.8m5.84-2.58a14.98 14.98 0 006.16-12.12A14.98 14.98 0 009.63 8.41m5.96 5.96a14.926 14.926 0 01-5.841 2.58m-.119-8.54a6 6 0 00-7.381 5.84h4.8m2.581-5.84a14.927 14.927 0 00-2.58 5.84m2.699 2.7c-.103.021-.207.041-.311.06a15.09 15.09 0 01-2.448-2.448 14.9 14.9 0 01.06-.312m-2.24 2.39a4.493 4.493 0 00-1.757 4.306 4.493 4.493 0 004.306-1.758M16.5 9a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z"/></svg></button>
+        <a class="icbtn" href="#" aria-label="Help"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8.25 7.5C8.25 5.01 9.93 3 12 3s3.75 1.68 3.75 3.75c0 1.66-1.05 2.7-2.27 3.52-1.06.72-1.48 1.48-1.48 2.63v1.6"/><circle cx="12" cy="19" r="1.4"/></svg></a>
+        <div class="user">
+          <div class="txt"><div class="nm">Dev User</div><div class="em">dev@localhost</div></div>
+          <span class="avatar" aria-hidden="true"><svg viewBox="0 0 40 40"><defs><clipPath id="avc"><circle cx="20" cy="20" r="20"/></clipPath></defs><g clip-path="url(#avc)"><rect width="40" height="40" fill="#d9e6ee"/><circle cx="20" cy="15" r="7.5" fill="#6b7f8e"/><path d="M4 42c0-9 7-15 16-15s16 6 16 15z" fill="#6b7f8e"/></g></svg></span>
+          <button class="signout" type="button">Sign out</button>
+        </div>
+      </div>
+    </header>
+    <main><div class="page" id="page"></div></main>
+  </div>
+</div>
+<a class="fab" href="#" aria-label="Chat with Clara"><svg class="ic" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.4 6.6L21 11l-6.6 2.4L12 20l-2.4-6.6L3 11l6.6-2.4z"/></svg></a>
+
+<script>
+/* ---------------- fictional demo data ---------------- */
+const TYPE_STYLE = {
+  'project-scope': { abbr: 'SCOPE', label: 'Project Scope', bg: 'rgba(249,115,22,.14)', fg: '#c2410c' },
+  brd:             { abbr: 'BRD',   label: 'BRD',           bg: 'rgba(236,72,153,.14)', fg: '#be185d' },
+  'solution-design': { abbr: 'DESIGN', label: 'Solution Design', bg: 'rgba(99,102,241,.14)', fg: '#4338ca' },
+  estimate:        { abbr: 'EST',   label: 'Estimate',      bg: 'rgba(34,197,94,.14)',  fg: '#15803d' },
+  'commercial-terms': { abbr: 'COMM', label: 'Commercial Terms', bg: 'rgba(107,114,128,.16)', fg: '#374151' },
+  sow:             { abbr: 'SOW',   label: 'SOW',           bg: 'rgba(20,184,166,.14)', fg: '#0f766e' },
+  spec:            { abbr: 'SPEC',  label: 'Specification', bg: 'rgba(59,130,246,.14)', fg: '#1d4ed8' },
+  decision:        { abbr: 'ADR',   label: 'Decision',      bg: 'rgba(168,85,247,.14)', fg: '#7e22ce' },
+  mock:            { abbr: 'MOCK',  label: 'Mock',          bg: 'rgba(20,184,166,.14)', fg: '#0f766e' },
+  'status-report': { abbr: 'STAT',  label: 'Status Report', bg: 'rgba(107,114,128,.16)', fg: '#374151' },
+  'release-notes': { abbr: 'REL',   label: 'Release Notes', bg: 'rgba(168,85,247,.14)', fg: '#7e22ce' },
+};
+
+const EXAMPLES = {
+  project: {
+    key: 'project', label: 'Project: Mobile Rollout',
+    crumb: [['Northwind Logistics', 'workspace'], ['Mobile Rollout', null]],
+    title: 'Mobile Rollout', state: 'backlog', subtitle: 'Workspace: Northwind Logistics',
+    tabs: ['Overview', 'Issues', 'Documents', 'Conversations', 'Activity', 'Connectors', 'Settings'],
+    sidebar: { ws: ['N', '#e11d48', 'Northwind Logistics', 'Workspace · 10 projects'], projects: ['Compliance Uplift', 'Mobile Rollout', 'Reporting Rebuild', 'Security Hardening', 'Performance Programme', 'Legacy Decommission', 'Self-Service Portal', 'Payments Integration'], activeProject: 'Mobile Rollout' },
+    folders: [
+      { id: 'intake', name: '1 Intake', parent: null, updated: 'Today · 3:32 PM', created: '9/30/2026' },
+      { id: 'design', name: '2 Design', parent: null, updated: 'Today · 3:32 PM', created: '9/30/2026' },
+      { id: 'delivery', name: '3 Delivery', parent: null, updated: 'Today · 3:32 PM', created: '9/30/2026' },
+      { id: 'handover', name: '4 Handover', parent: null, updated: 'Today · 3:32 PM', created: '9/30/2026' },
+      { id: 'client', name: 'Client material', parent: null, updated: 'Today · 3:32 PM', created: '9/30/2026' },
+    ],
+    docs: [
+      { id: 'd1', title: 'Project Scope — Mobile Rollout', type: 'project-scope', folder: 'intake', updated: 'Today · 3:32 PM', created: '8/21/2026', size: '306 B', indexing: true },
+      { id: 'd2', title: 'Business Requirements — Mobile Rollout', type: 'brd', folder: 'intake', updated: 'Today · 3:32 PM', created: '8/21/2026', size: '302 B', indexing: true },
+      { id: 'd3', title: 'WBS & Estimate — Mobile Rollout', type: 'estimate', folder: 'intake', updated: 'Today · 3:32 PM', created: '8/21/2026', size: '221 B', indexing: true },
+      { id: 'd4', title: 'Statement of Work — Mobile Rollout', type: 'sow', folder: 'intake', updated: 'Today · 3:32 PM', created: '8/21/2026', size: '224 B', indexing: true },
+      { id: 'd5', title: 'Architecture Decision — Mobile Rollout', type: 'decision', folder: 'design', updated: 'Today · 3:32 PM', created: '8/21/2026', size: '251 B', indexing: true },
+      { id: 'd6', title: 'Interface Mockup — Mobile Rollout', type: 'mock', folder: 'design', updated: 'Today · 3:32 PM', created: '8/21/2026', size: '186 B', indexing: true },
+      { id: 'd7', title: 'Status report — week 12', type: 'status-report', folder: 'delivery', updated: 'Today · 3:32 PM', created: '9/30/2026', size: '139 B', indexing: true },
+      { id: 'd8', title: 'Release notes — Mobile Rollout 1.0', type: 'release-notes', folder: 'delivery', updated: 'Today · 3:32 PM', created: '9/30/2026', size: '136 B', indexing: true },
+      { id: 'd9', title: 'Operations manual — Mobile Rollout', type: 'spec', folder: 'handover', updated: 'Today · 3:32 PM', created: '9/30/2026', size: '142 B', indexing: true },
+      { id: 'd10', title: 'Acceptance record — phase 1', type: 'decision', folder: 'handover', updated: 'Today · 3:32 PM', created: '9/30/2026', size: '123 B', indexing: true },
+      { id: 'd11', title: 'Store list (spreadsheet placeholder)', type: 'spec', folder: 'client', updated: 'Today · 3:32 PM', created: '9/30/2026', size: '224 B', indexing: true },
+      { id: 'd12', title: 'Brand guidelines (PDF placeholder)', type: 'spec', folder: 'client', updated: 'Today · 3:32 PM', created: '9/30/2026', size: '230 B', indexing: true },
+    ],
+  },
+  library: {
+    key: 'library', label: 'Workspace: Razor Vision (internal) — the organisation library',
+    crumb: [['Razor Vision (internal)', 'workspace']],
+    title: 'Razor Vision (internal)', state: null, subtitle: 'The organisation library: templates and standards, product decisions and internal reference, shared across every client.',
+    tabs: ['Overview', 'Agreements', 'Documents', 'Conversations', 'Activity', 'AI Activity', 'Connectors', 'Assets', 'Settings'],
+    sidebar: { ws: ['R', '#7c3aed', 'Razor Vision (internal)', 'Workspace · 0 projects'], projects: [], activeProject: null },
+    folders: [
+      { id: 'ref', name: 'Internal reference', parent: null, updated: 'Today · 3:32 PM', created: '9/30/2026' },
+      { id: 'dec', name: 'Product decisions', parent: null, updated: 'Today · 3:32 PM', created: '9/30/2026' },
+      { id: 'tpl', name: 'Templates and standards', parent: null, updated: 'Today · 3:32 PM', created: '9/30/2026' },
+      { id: 'chain', name: 'Intake chain', parent: 'tpl', updated: 'Today · 11:52 AM', created: '10/1/2026' },
+    ],
+    docs: [
+      { id: 'l1', title: 'Glossary — workspace, account, asset, project, shelf', type: 'spec', folder: 'ref', updated: 'Today · 11:52 AM', created: '10/1/2026', size: '250 B' },
+      { id: 'l2', title: 'Onboarding playbook', type: 'spec', folder: 'ref', updated: 'Today · 11:52 AM', created: '10/1/2026', size: '180 B' },
+      { id: 'l3', title: 'Reading a project: Intake → Design → Delivery → Handover', type: 'spec', folder: 'ref', updated: 'Today · 11:52 AM', created: '10/1/2026', size: '187 B' },
+      { id: 'l4', title: 'Where should I put this? — the four questions', type: 'spec', folder: 'ref', updated: 'Today · 11:52 AM', created: '10/1/2026', size: '312 B' },
+      { id: 'l5', title: 'Decision — one owner per document (ADR-016)', type: 'decision', folder: 'dec', updated: 'Today · 11:52 AM', created: '10/1/2026', size: '155 B' },
+      { id: 'l6', title: 'Decision — the library is this workspace, for now', type: 'decision', folder: 'dec', updated: 'Today · 11:52 AM', created: '10/1/2026', size: '152 B' },
+      { id: 'l7', title: 'Decision — the type decides the shelf (ADR-016 A3)', type: 'decision', folder: 'dec', updated: 'Today · 11:52 AM', created: '10/1/2026', size: '233 B' },
+      { id: 'l8', title: '0 READ ME FIRST — how documents are organised', type: 'spec', folder: 'tpl', updated: 'Today · 11:52 AM', created: '10/1/2026', size: '410 B' },
+      { id: 'l9', title: 'Document naming standard', type: 'spec', folder: 'tpl', updated: 'Today · 11:52 AM', created: '10/1/2026', size: '173 B' },
+      { id: 'l10', title: 'Status report — template', type: 'status-report', folder: 'tpl', updated: 'Today · 11:52 AM', created: '10/1/2026', size: '64 B' },
+      { id: 'l11', title: '1 Project scope — template', type: 'project-scope', folder: 'chain', updated: 'Today · 11:52 AM', created: '10/1/2026', size: '88 B' },
+      { id: 'l12', title: '2 Business requirements (BRD) — template', type: 'brd', folder: 'chain', updated: 'Today · 11:52 AM', created: '10/1/2026', size: '91 B' },
+      { id: 'l13', title: '3 Solution design — template', type: 'solution-design', folder: 'chain', updated: 'Today · 11:52 AM', created: '10/1/2026', size: '88 B' },
+      { id: 'l14', title: '4 WBS & estimate — template', type: 'estimate', folder: 'chain', updated: 'Today · 11:52 AM', created: '10/1/2026', size: '83 B' },
+      { id: 'l15', title: '5 Commercial terms — template', type: 'commercial-terms', folder: 'chain', updated: 'Today · 11:52 AM', created: '10/1/2026', size: '70 B' },
+      { id: 'l16', title: '6 Statement of work — template', type: 'sow', folder: 'chain', updated: 'Today · 11:52 AM', created: '10/1/2026', size: '88 B' },
+    ],
+  },
+};
+
+/* ---------------- state ---------------- */
+const state = { example: 'project', view: 'tree', collapsed: new Set(), selected: null, currentFolder: null };
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const collator = new Intl.Collator(undefined, { numeric: true, sensitivity: 'base' });
+const ic = (d, cls = 'ic') => `<svg class="${cls}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="${d}"/></svg>`;
+const P = {
+  back: 'M19 12H5m7 7l-7-7 7-7', home: 'M3 12l9-9 9 9M5 10v10h14V10', board: 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2',
+  folder: 'M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z', doc: 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.6a1 1 0 01.7.3l5.4 5.4a1 1 0 01.3.7V19a2 2 0 01-2 2z',
+  chevD: 'M19 9l-7 7-7-7', chevR: 'M9 5l7 7-7 7', chevL: 'M15 19l-7-7 7-7', plus: 'M12 4v16m8-8H4', sun: 'M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m12.728 0l-.707-.707M6.343 6.343l-.707-.707M16 12a4 4 0 11-8 0 4 4 0 018 0z', moon: 'M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z',
+  issue: 'M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z', chat: 'M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.4-4 8-9 8a9.9 9.9 0 01-4-.8L3 20l1.4-3.7A7.4 7.4 0 013 12c0-4.4 4-8 9-8s9 3.6 9 8z', clock: 'M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z',
+  gridV: 'M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h6v6h-6z', listV: 'M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01', treeV: 'M5 4v14M5 9h6M5 18h6M11 6h9v5h-9zM11 15h9v5h-9z',
+};
+
+/* ---------------- renderers ---------------- */
+function renderSidebar(ex) {
+  const [ini, color, name, sub] = ex.sidebar.ws;
+  const projects = ex.sidebar.projects.map(p => `<a class="proj ${p === ex.sidebar.activeProject ? 'active' : ''} ${['Self-Service Portal','Payments Integration'].includes(p) ? 'off' : ''}" href="#" data-toast="Opens project ${esc(p)}">${ic(P.folder, 'ic fold')}<span>${esc(p)}</span></a>`).join('');
+  document.getElementById('sidebar').innerHTML = `
+    <div class="ws"><div class="av" style="background:${color}">${ini}</div><div><div class="nm">${esc(name)}</div><div class="sub">${esc(sub)}</div></div></div>
+    <div class="jump">${ic(P.doc, 'ic').replace('<path', '<path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" data-x').replace(/d="M9 12h6[^"]*"/, '')}<span>Jump to…</span><kbd>⌘K</kbd></div>
+    <a class="sb-item" href="#" data-toast="Back to the dashboard">${ic(P.back)}<span>Dashboard</span></a>
+    <a class="sb-item" href="#" data-toast="Opens the workspace overview">${ic(P.home)}<span>Overview</span></a>
+    <a class="sb-item" href="#" data-toast="Opens the issue board">${ic(P.board)}<span>Issue Board</span></a>
+    <a class="sb-item" href="#" data-toast="Opens the project board">${ic(P.folder)}<span>Project Board</span></a>
+    <div class="sb-head"><span>Projects (${ex.sidebar.projects.length ? 10 : 0})</span>${ic(P.chevD, 'ic')}</div>
+    ${projects || '<div class="muted" style="padding:6px 12px">No projects yet</div>'}
+    ${projects ? '<a class="showall" href="#" data-toast="Shows all 10 projects">Show all 10 projects</a>' : ''}
+    <div class="sb-head"><span>Starred</span>${ic(P.chevR, 'ic')}</div>
+    <div class="sb-head"><span>${ex.key === 'project' ? 'Project documents' : 'Documents'}</span>${ic(P.chevR, 'ic')}</div>
+    <div class="sb-head"><span>${ex.key === 'project' ? 'Project conversations' : 'Conversations'}</span>${ic(P.chevR, 'ic')}</div>`;
+  document.getElementById('crumb').innerHTML = ex.crumb.map(([t, tag], i) => `${i ? ic(P.chevR, 'ic').replace('class="ic"', 'class="ic" style="width:14px;height:14px"') : ''}<span class="${i === ex.crumb.length - 1 ? 'cur' : 'ws-l'}">${esc(t)}</span>${tag ? `<span class="tag">(${tag})</span>` : ''}`).join('');
+}
+
+function typeIcon(type) { const t = TYPE_STYLE[type]; return `<span class="tic" style="background:${t.bg};color:${t.fg}">${t.abbr}</span>`; }
+function typePill(type) { const t = TYPE_STYLE[type]; return `<span class="pill" style="background:${t.bg};color:${t.fg}">${t.label}</span>`; }
+
+function docRow(d, tree) {
+  const depth = tree ? tree.depth : 0;
+  const rails = tree ? railsHtml(tree) : '';
+  return `<div class="grid row" role="button" tabindex="0" data-doc="${d.id}" title="${esc(d.title)}">
+    <div class="cell-ic">${tree ? '' : typeIcon(d.type)}</div>
+    <div class="name" style="padding-left:${depth ? depth * 20 + 2 : 0}px">${rails}${tree ? typeIcon(d.type) : ''}<span class="t">${esc(d.title)}</span></div>
+    <div>${typePill(d.type)}</div>
+    <div class="muted wide">${d.updated}</div>
+    <div class="muted wide">${d.created}</div>
+    <div class="muted wide right">${d.indexing ? '<span class="idx">Indexing…</span>' : ''}${d.size}</div>
+  </div>`;
+}
+function folderRow(f, count, tree) {
+  const depth = tree ? tree.depth : 0;
+  const expanded = tree ? !state.collapsed.has(f.id) : undefined;
+  return `<div class="grid row" role="button" tabindex="0" data-folder="${f.id}" ${tree ? `aria-expanded="${expanded}"` : ''} title="${esc(f.name)}">
+    <div class="cell-ic">${tree ? `<span class="chev" data-toggle="${f.id}" aria-hidden="true">${ic(P.chevD, '')}</span>` : '<span style="font-size:20px">📁</span>'}</div>
+    <div class="name" style="padding-left:${depth ? depth * 20 + 2 : 0}px">${tree ? railsHtml(tree) : ''}<span class="t">${esc(f.name)}</span></div>
+    <div class="ftype">${tree ? '' : 'Folder'}</div>
+    <div class="muted wide">${f.updated}</div>
+    <div class="muted wide">${f.created}</div>
+    <div class="muted wide right">${count} ${count === 1 ? 'item' : 'items'}</div>
+  </div>`;
+}
+function railsHtml({ depth, guides, isLast }) {
+  if (!depth) return '';
+  const own = depth - 1; let h = '';
+  guides.slice(0, own).forEach((cont, lvl) => { if (cont) h += `<span class="rail" style="left:${lvl * 20 + 9}px"></span>`; });
+  h += `<span class="rail ${isLast ? 'last' : ''}" style="left:${own * 20 + 9}px"></span><span class="conn" style="left:${own * 20 + 9}px"></span>`;
+  return h;
+}
+
+function renderExplorer(ex) {
+  const byParent = new Map(), docsByFolder = new Map();
+  for (const f of ex.folders) (byParent.get(f.parent) ?? byParent.set(f.parent, []).get(f.parent)).push(f);
+  for (const d of ex.docs) (docsByFolder.get(d.folder) ?? docsByFolder.set(d.folder, []).get(d.folder)).push(d);
+  for (const l of docsByFolder.values()) l.sort((a, b) => collator.compare(a.title, b.title));
+  const count = id => (docsByFolder.get(id) ?? []).length;
+  const header = `<div class="grid ghead"><div></div><div>Name</div><div>Type</div><div class="wide">Modified</div><div class="wide">Created</div><div class="wide" style="text-align:right">Size</div></div>`;
+  let body = '', folders = 0, files = 0;
+
+  if (state.view === 'tree') {
+    folders = ex.folders.length; files = ex.docs.length;
+    const walk = (parent, depth, guides) => {
+      const fs = byParent.get(parent) ?? [], ds = docsByFolder.get(parent) ?? [], total = fs.length + ds.length;
+      fs.forEach((f, i) => { const isLast = i === total - 1; body += folderRow(f, count(f.id), { depth, guides, isLast }); if (!state.collapsed.has(f.id)) walk(f.id, depth + 1, [...guides, !isLast]); });
+      ds.forEach((d, i) => body += docRow(d, { depth, guides, isLast: fs.length + i === total - 1 }));
+    };
+    walk(null, 0, []);
+  } else {
+    const fs = byParent.get(state.currentFolder) ?? [], ds = docsByFolder.get(state.currentFolder) ?? [];
+    folders = fs.length; files = ds.length;
+    if (state.view === 'list') { fs.forEach(f => body += folderRow(f, count(f.id))); ds.forEach(d => body += docRow(d)); }
+    else body = `<div class="cards">${fs.map(f => `<div class="card row" data-folder="${f.id}"><div style="font-size:28px">📁</div><div class="t">${esc(f.name)}</div><div class="muted">${count(f.id)} items</div></div>`).join('')}${ds.map(d => `<div class="card row" data-doc="${d.id}">${typeIcon(d.type)}<div class="t">${esc(d.title)}</div><div class="muted">${d.updated}</div></div>`).join('')}</div>`;
+  }
+
+  const trail = state.view === 'tree'
+    ? `<div class="trail"><span class="on">All folders</span></div>`
+    : `<button class="navbtn" aria-label="Back">${ic(P.chevL, 'ic')}</button><button class="navbtn" aria-label="Forward">${ic(P.chevR, 'ic')}</button><div class="trail"><button class="${state.currentFolder ? '' : 'on'}" data-nav="root">All</button>${state.currentFolder ? `<span class="on">${esc(ex.folders.find(f => f.id === state.currentFolder)?.name ?? '')}</span>` : ''}</div>`;
+  const vb = (v, d, label) => `<button class="vbtn" data-view="${v}" aria-label="${label}" title="${label}" aria-pressed="${state.view === v}">${ic(d, '')}</button>`;
+
+  return `
+    <div class="sec-head"><h2>${ic(P.doc)}Documents <span class="n">(${ex.docs.length})</span></h2>
+      <div class="actions"><button class="btn primary sm" data-toast="Opens the New Document form">${ic(P.plus, 'ic').replace('class="ic"', 'class="ic" style="width:16px;height:16px"')}New Document</button><button class="btn sm" data-toast="Creates a folder">${ic(P.folder, 'ic').replace('class="ic"', 'class="ic" style="width:16px;height:16px"')}New Folder</button><button class="btn sm" data-toast="Opens the draw.io editor">${ic(P.plus, 'ic').replace('class="ic"', 'class="ic" style="width:16px;height:16px"')}New DrawIO</button></div></div>
+    <div class="toolbar">${trail}<div class="views">${vb('grid', P.gridV, 'Grid view')}${vb('list', P.listV, 'List view')}${vb('tree', P.treeV, 'Tree view')}</div></div>
+    <div class="explorer">${state.view === 'grid' ? body : header + body}</div>
+    <div class="status">${folders ? `<span>${folders} ${folders === 1 ? 'folder' : 'folders'}</span>` : ''}<span>${files} ${files === 1 ? 'file' : 'files'}</span></div>`;
+}
+
+function render() {
+  const ex = EXAMPLES[state.example];
+  renderSidebar(ex);
+  document.getElementById('page').innerHTML = `
+    <div class="note"><b>Interactive mockup</b> with fictional data. Switch example: ${Object.values(EXAMPLES).map(e => `<button class="chip ${e.key === state.example ? 'on' : ''}" data-example="${e.key}">${esc(e.label)}</button>`).join('')} <span>· The rightmost view toggle is the tree. Click a chevron to fold a shelf.</span></div>
+    <div class="ptitle"><h1>${esc(ex.title)}</h1>${ex.state ? `<span class="badge">${ex.state}</span>` : ''}
+      <div class="actions"><button class="btn primary" data-toast="Starts a conversation scoped to this ${ex.key === 'project' ? 'project' : 'workspace'}">${ic(P.chat, 'ic').replace('class="ic"', 'class="ic" style="width:16px;height:16px"')}Start Conversation</button>${ex.key === 'project' ? '<button class="btn" data-toast="Opens the credit request form">+ New credit request</button><button class="btn" data-toast="Changes the project state">Backlog ⌄</button><button class="btn" data-toast="Sets a priority">No Priority ⌄</button>' : ''}<button class="btn" data-toast="Archives it">Archive</button></div></div>
+    <div class="subtitle">${esc(ex.subtitle)}</div>
+    <div class="tabs">${ex.tabs.map(t => `<button class="tab ${t === 'Documents' ? 'active' : ''}" data-toast="${t === 'Documents' ? '' : 'Opens the ' + t + ' tab'}">${t === 'Documents' ? ic(P.doc) : t === 'Issues' ? ic(P.issue) : t === 'Conversations' ? ic(P.chat) : t === 'Activity' ? ic(P.clock) : ''}${t}</button>`).join('')}</div>
+    <section id="explorer">${renderExplorer(ex)}</section>`;
+  paintTheme();
+}
+
+/* ---------------- interactions ---------------- */
+let toastEl, toastTimer;
+function toast(msg, route) {
+  if (toastEl) toastEl.remove();
+  toastEl = document.createElement('div'); toastEl.className = 'toast'; toastEl.innerHTML = `<span>${esc(msg)}</span>${route ? `<code>${esc(route)}</code>` : ''}`;
+  document.body.appendChild(toastEl); clearTimeout(toastTimer); toastTimer = setTimeout(() => { toastEl && toastEl.remove(); toastEl = null; }, 2600);
+}
+document.addEventListener('click', e => {
+  const t = e.target.closest('[data-toggle]'); if (t) { e.stopPropagation(); const id = t.dataset.toggle; state.collapsed.has(id) ? state.collapsed.delete(id) : state.collapsed.add(id); rerenderExplorer(); return; }
+  const v = e.target.closest('[data-view]'); if (v) { state.view = v.dataset.view; if (state.view === 'tree') state.currentFolder = null; try { localStorage.setItem('mock-explorer-view', state.view); } catch {} rerenderExplorer(); return; }
+  const ex = e.target.closest('[data-example]'); if (ex) { state.example = ex.dataset.example; state.collapsed.clear(); state.currentFolder = null; render(); return; }
+  const nav = e.target.closest('[data-nav]'); if (nav) { state.currentFolder = null; rerenderExplorer(); return; }
+  const fr = e.target.closest('[data-folder]'); if (fr) { if (state.view === 'tree') { const id = fr.dataset.folder; state.collapsed.has(id) ? state.collapsed.delete(id) : state.collapsed.add(id); rerenderExplorer(); } else { state.currentFolder = fr.dataset.folder; rerenderExplorer(); } return; }
+  const dr = e.target.closest('[data-doc]'); if (dr) { e.preventDefault(); const d = EXAMPLES[state.example].docs.find(x => x.id === dr.dataset.doc); toast(`Opens “${d.title}”`, '/d/<document id>'); return; }
+  const tb = e.target.closest('[data-toast]'); if (tb && tb.dataset.toast) { e.preventDefault(); toast(tb.dataset.toast); return; }
+  if (e.target.closest('#themeBtn')) { document.documentElement.dataset.theme = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark'; try { localStorage.setItem('mock-theme', document.documentElement.dataset.theme); } catch {} paintTheme(); return; }
+  if (e.target.closest('#hamb')) { document.getElementById('shell').classList.add('drawer'); return; }
+  if (e.target.closest('#drawerBackdrop')) { document.getElementById('shell').classList.remove('drawer'); return; }
+  if (e.target.closest('.search-trigger, .signout, .fab, .sb-footer button, .jump, .navbtn')) { e.preventDefault(); toast('Not part of this mockup'); }
+});
+document.addEventListener('keydown', e => { if (e.key === 'Enter') { const row = e.target.closest?.('[data-folder], [data-doc]'); if (row) row.click(); } });
+function rerenderExplorer() { document.getElementById('explorer').innerHTML = renderExplorer(EXAMPLES[state.example]); }
+function paintTheme() { const dark = document.documentElement.dataset.theme === 'dark'; const b = document.getElementById('themeBtn'); b.innerHTML = ic(dark ? P.sun : P.moon); b.title = dark ? 'Switch to light mode' : 'Switch to dark mode'; }
+try { const v = localStorage.getItem('mock-explorer-view'); if (['grid', 'list', 'tree'].includes(v)) state.view = v; const th = localStorage.getItem('mock-theme'); if (th === 'dark' || th === 'light') document.documentElement.dataset.theme = th; } catch {}
+if (!document.documentElement.dataset.theme) document.documentElement.dataset.theme = 'light';
+render();
+</script>
+</body>
+</html>
